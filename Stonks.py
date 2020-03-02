@@ -2,7 +2,7 @@ from iexfinance.stocks import Stock
 import os
 import Passwords
 import numpy as np
-from datetime import datetime, date, time, timedelta
+import datetime
 import threading
 import AutomateEmail
 
@@ -38,29 +38,28 @@ class Stonks:
 
     @staticmethod
     def price_change(ticker):
-        numerator = np.subtract(Stonks.price(ticker), Stock(ticker).get_close())
-        change = np.divide(numerator, Stock(ticker).get_close())
+        numerator = float(Stonks.price(ticker)) - float(Stock(ticker).get_close())
+        change = round(numerator / Stock(ticker).get_close() * 100, 2)
+        # test variable
         if change >= .025:
-            a = Stonks.stock_user_notified_price[ticker] = Stonks.price(ticker)
-            b = Stonks.stock_user_notified_timer[ticker] = datetime.datetime.now()
-            c = Stonks.stock_user_notified_percent[ticker] = change
+            Stonks.stock_user_notified_price[ticker] = Stonks.price(ticker)
+            Stonks.stock_user_notified_timer[ticker] = datetime.datetime.now()
+            Stonks.stock_user_notified_percent[ticker] = change
             # add to notified dict
             email_subject = Stock(ticker).get_company_name()
             email_body = email_subject + " has increased by " + str(
                 round(change * 100, 2)) + "% and is currently trading at $" + str(Stonks.price(ticker)) + "."
             AutomateEmail.automaticEmail(email_subject, email_body)
-            return a,b,c
 
         if change <= -.025:
-            a = Stonks.stock_user_notified_price[ticker] = Stonks.price(ticker)
-            b = Stonks.stock_user_notified_timer[ticker] = datetime.datetime.now()
-            c = Stonks.stock_user_notified_percent[ticker] = change
+            Stonks.stock_user_notified_price[ticker] = Stonks.price(ticker)
+            Stonks.stock_user_notified_timer[ticker] = datetime.datetime.now()
+            Stonks.stock_user_notified_percent[ticker] = change
             # add to notified dict
             email_subject = Stock(ticker).get_company_name()
             email_body = email_subject + " has decreased by " + str(
                 round(change * 100, 2)) + "% and is currently trading at $" + str(Stonks.price(ticker)) + "."
             AutomateEmail.automaticEmail(email_subject, email_body)
-            return a, b, c
 
     """ notifies user of price of stock is change is greater than 2.5% """
 
@@ -68,32 +67,40 @@ class Stonks:
 
     @staticmethod
     def renotify(ticker):
-        numerator = np.subtract(Stonks.price(ticker), float(Stock(ticker).get_close()))
-        change = np.divide(numerator, Stock(ticker).get_close())
+        numerator = Stonks.price(ticker) - float(Stock(ticker).get_close())
+        change = numerator / Stock(ticker).get_close()
 
         notified = float(Stonks.stock_user_notified_price.get(ticker))
         new = float(Stonks.price(ticker))
 
-        numerator_notified = np.subtract(new, notified)
+        numerator_notified = new - notified
 
-        change_since_notified = np.divide(numerator_notified, notified)
-        a = Stonks.stock_user_notified_timer.get(ticker)
-        difference = datetime.datetime.now() - a
-        if ((
-                change_since_notified - Stonks.stock_user_notified_percent.get(ticker) > .02 | change_since_notified - Stonks.stock_user_notified_percent.get(ticker) < -.02)
-                | ((
-                           change_since_notified - Stonks.stock_user_notified_percent.get(ticker) > .01 | change_since_notified - Stonks.stock_user_notified_percent.get(ticker) < -.01)
-                   & (difference.seconds/3600) > 60)):
+        change_since_notified = numerator_notified / notified
+        difference = datetime.datetime.now() - Stonks.stock_user_notified_timer.get(ticker)
+
+        first = (change_since_notified - float(Stonks.stock_user_notified_percent.get(ticker))) > .02
+        first_part2 = (change_since_notified - float(Stonks.stock_user_notified_percent.get(ticker))) < -.02
+        # if change is greater than or less than 2%
+        second = (change_since_notified - float(Stonks.stock_user_notified_percent.get(ticker))) > .01
+        second_part2 = (float(change_since_notified - Stonks.stock_user_notified_percent.get(ticker))) < -.01
+        # change is greater than or less than 1%
+        second_part3 = ((difference.seconds / 3600) > 60)
+        # difference is greater than 60 minutes
+
+        if (first or first_part2) or ((second or second_part2) and second_part3):
             Stonks.stock_user_notified_price[ticker] = float(Stock(ticker).get_price())
             Stonks.stock_user_notified_price[ticker] = datetime.datetime.now()
             Stonks.stock_user_notified_percent[ticker] = change
             # add to notified dict
-            email_body = str(Stock(ticker).get_company_name()) + " has changed by an additional" + str(
-                change_since_notified) + "% and is currently " \
-                                         "trading at $" + str(round(change * 100, 2)) + "."
+            email_subject = Stock(ticker).get_company_name()
+            email_body = email_subject + " has changed by an additional " + str(round(
+                change_since_notified * 100, 2)) + "% and is currently " \
+                                                   "trading at $" + str(Stonks.price(ticker)) + "."
 
-    """ updates the user on the price of the stock if stock is +/- an additional 1% of notified price after 1 hour. 
-    If stock is +/- additional 2%, notifies the user immediately"""
+            AutomateEmail.automaticEmail(email_subject, email_body)
+
+        """ updates the user on the price of the stock if stock is +/- an additional 1% of notified price after 1 hour. 
+        If stock is +/- additional 2%, notifies the user immediately"""
 
     @staticmethod
     def update_prices():

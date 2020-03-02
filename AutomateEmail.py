@@ -18,7 +18,7 @@ def automaticEmail(email_subject, content):
 
     message['From'] = sender_address
     message['To'] = receiver_address
-    message['Subject'] = "" + email_subject
+    message['Subject'] = "Update: " + email_subject
     # The subject line
     # The body and the attachments for the mail
 
