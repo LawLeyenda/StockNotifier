@@ -1,4 +1,4 @@
-import passwords
+import Passwords
 import smtplib
 
 from email.mime.multipart import MIMEMultipart
@@ -6,9 +6,9 @@ from email.mime.text import MIMEText
 mail_content = "Hello World :)"
 #The mail addresses and password
 
-sender_address = passwords.gmail_user
-sender_pass = passwords.gmail_pass
-receiver_address = passwords.gmail_receiver
+sender_address = Passwords.gmail_user
+sender_pass = Passwords.gmail_pass
+receiver_address = Passwords.gmail_receiver
 #Setup the MIME
 message = MIMEMultipart()
 message['From'] = sender_address
