@@ -125,7 +125,7 @@ class Stonks:
     @staticmethod
     def update_prices():
         # update prices during stock market times
-        threading.Timer(30.0, Stonks.update_prices).start()
+        #threading.Timer(30.0, Stonks.update_prices).start()
         for stock in Stonks.stock_list:
             Stonks.price_change(stock)
 
