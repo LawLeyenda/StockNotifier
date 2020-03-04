@@ -1,0 +1,12 @@
+,AAPL,TSLA,GE,MMM,T,CSCO,SCHW
+price,289.32,745.51,10.88,145.24,36.3,40.04,38.3
+yesterday_close,289.32,745.51,10.88,145.24,36.3,40.04,38.3
+company_name,"Apple, Inc.","Tesla, Inc.",General Electric Co.,3M Co.,"AT&T, Inc.","Cisco Systems, Inc.",The Charles Schwab Corp.
+user_notified_percent,,,,,,,
+user_notified_price,,,,,,,
+user_notified_time,,,,,,,
+user_notified?,,,,,,,
+price_target,,,,,,,
+pe_ratio,,,,,,,
+week52High,327.85,968.99,13.26,219.75,39.7,58.26,51.65
+week52Low,169.5,176.99,7.65,144.44,29.67,38.35,34.58
