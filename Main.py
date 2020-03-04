@@ -6,6 +6,7 @@ import Passwords
 
 
 def main():
+    
     my_stock_list = {'GM', 'XOM', 'OVV', 'TSLA', 'AAPL', 'MMM', 'AMZN', 'GE'}
     print("Starting...")
     test = Stonks.Stonks()
@@ -27,7 +28,7 @@ def main():
         print("Email sent!")
         AutomateEmail.automaticEmail("Script is still running", "test ")
         
-    schedule.every().minute.do(test)
+    schedule.every(30).seconds.do(test)
 
 
     while 1:
