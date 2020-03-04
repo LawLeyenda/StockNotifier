@@ -34,7 +34,7 @@ class Stonks:
         ticker = ticker.upper()
         stock_quote = Stock(ticker).get_quote()
         self.myStockData.at["price", ticker] = stock_quote.get('latestPrice')
-        self.myStockData.at["yesterday_close", ticker] = stock_quote.get('close')
+        self.myStockData.at["yesterday_close", ticker] = stock_quote.get('previousClose')
         self.myStockData.at['company_name', ticker] = stock_quote.get('companyName')
         self.myStockData.at["pe_ratio", ticker] = stock_quote.get('pe_ratio')
         self.myStockData.at["week52High", ticker] = stock_quote.get('week52High')
@@ -45,7 +45,7 @@ class Stonks:
         stock_quote = Stock(ticker).get_quote()
         self.myStockData[ticker] = ""
         self.myStockData.at["price", ticker] = stock_quote.get('latestPrice')
-        self.myStockData.at["yesterday_close", ticker] = stock_quote.get('close')
+        self.myStockData.at["yesterday_close", ticker] = stock_quote.get('previousClose')
         self.myStockData.at['company_name', ticker] = stock_quote.get('companyName')
         self.myStockData.at["pe_ratio", ticker] = stock_quote.get('pe_ratio')
         self.myStockData.at["week52High", ticker] = stock_quote.get('week52High')
