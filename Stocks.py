@@ -7,6 +7,7 @@ import datetime
 import threading
 import AutomateEmail
 import StockData
+import time
 
 os.environ['IEX_TOKEN'] = Passwords.IEX_TOKEN
 
@@ -43,6 +44,7 @@ class Stocks:
         self.myStockData.at["week52High", ticker] = stock_quote.get('week52High')
         self.myStockData.at["week52Low", ticker] = stock_quote.get('week52Low')
         StockData.save(self.myStockData, "myStockData.csv")
+
     '''add stock/update'''
 
     def remove_stock(self, ticker):
@@ -58,52 +60,58 @@ class Stocks:
     def notify_user(self, ticker):
         price = self.myStockData.at['price', ticker]
         numerator = price - self.myStockData.at['yesterday_close', ticker]
+        name = self.myStockData.at['company_name', ticker]
         change = round(numerator / self.myStockData.at['yesterday_close', ticker] * 100, 2)  # change is as 1s digit
         if self.myStockData.at['user_notified?', ticker] != 1:  # remember to reset to 0 at the end of a trading day
             if change >= 2.5 or change <= -2.5:
-                self.myStockData.at['user_notified?', ticker] = 1  # set notification to true for further notification constraints
+                self.myStockData.at[
+                    'user_notified?', ticker] = 1  # set notification to true for further notification constraints
                 self.myStockData.at['user_notified_price', ticker] = price
                 self.myStockData.at['user_notified_time', ticker] = datetime.datetime.now()
                 self.myStockData.at['user_notified_percent', ticker] = change
-                return [ticker, price, change]  # send out email
+                return [ticker, name, price, change]  # send out email
 
     """ notifies user of price of stock is change is greater than 1.5% """
 
     def renotify(self, ticker):
         if self.myStockData.at['user_notified?', ticker] == 1:
             price = self.myStockData.at['price', ticker]
+            notified = self.myStockData.at['user_notified_percent', ticker]
             numerator = price - self.myStockData.at['yesterday_close', ticker]
+            name = self.myStockData.at['company_name', ticker]
             change = round((numerator / self.myStockData.at['yesterday_close', ticker]) * 100, 2)
-            timeNow = datetime.datetime.now()
-            if (self.myStockData.at['user_notified_percent', ticker] > 0 and change >= 1.5) or \
-                    (self.myStockData.at['user_notified_percent', ticker] < 0 and change <= -1.5) and \
-                    (int((timeNow - self.myStockData.at[
+            time_now = datetime.datetime.now()
+            if (notified > 0 and change >= 1.5 + notified) or \
+                    (notified < 0 and change <= -1.5 + notified) and \
+                    (int((time_now - self.myStockData.at[
                         'user_notified_time', ticker]).total_seconds()) > 3600):  # if the the notified change is greater than 1.5 and the time has been creater than an hour
                 self.myStockData.at['user_notified_price', ticker] = price
                 self.myStockData.at['user_notified_time', ticker] = datetime.datetime.now()
                 self.myStockData.at['user_notified_percent', ticker] = change
-                return [ticker, price, change] #send out email
+                return [ticker, name, price, change]  # send out email
 
-
-    def update_prices(self, email):
-        for stock in self.myStockData:
-            self.price(stock)
-            temp = self.notify_user(stock)
-            email.notify(temp)
-            temp = self.renotify(stock)
-            email.renotify_email(temp)
-            StockData.save(self.myStockData, "myStockData.csv")
+    def update_prices(self, email):  # calls email object and sends out email if notifications hit threshold
+        while True:
+            for stock in self.myStockData:
+                self.price(stock)
+                temp = self.notify_user(stock)
+                email.notify(temp)
+                temp = self.renotify(stock)
+                email.renotify_email(temp)
+                StockData.save(self.myStockData, "myStockData.csv")
+                print("Updated")
+                time.sleep(30)  # run every 30 seconds
 
     def end_of_day(self):
         # house keeping
         # reset user_notified to 0
         for stock in self.myStockData:
             self.myStockData['user_notified?', stock] = 0
-            #weekly report
+            # weekly report
 
     def end_of_week(self):
         # update price_targets for analysts
         for stock in self.myStockData:
-            retrieve_data = Stock(stock).get_price_target() #get analysis data
+            retrieve_data = Stock(stock).get_price_target()  # get analysis data
             self.myStockData['priceTargetAverage', stock] = retrieve_data.get('priceTargetAverage')
             self.myStockData['numberOfAnalysts', stock] = retrieve_data.get('numberOfAnalysts')

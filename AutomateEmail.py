@@ -34,9 +34,11 @@ class AutomateEmail:
     def renotify_email(self, stock_info):
         if stock_info is None:
             return
+
         ticker = stock_info[0]
-        price = stock_info[1]
-        change = stock_info[2]
+        name = stock_info[1]
+        price = stock_info[2]
+        change = stock_info[3]
 
         if change > 0: # check if change is positive or negative
             changed = "increased"
@@ -45,7 +47,7 @@ class AutomateEmail:
             changed = "decreased"
             news = "Bad news!"
 
-        email_subject = "Update " + ticker + " | $" + str(round(price, 2))
+        email_subject = "Update " + name + " (" + ticker + ") "" | $" + str(round(price, 2))
         email_body = f"{news} " + email_subject + " is currently trading at $" + str(
             price) + f". Today it has {changed} a total of " + str(abs(change)) + "%."
         self.basic_automatic_email(email_subject, email_body)
@@ -55,10 +57,11 @@ class AutomateEmail:
             return
 
         ticker = stock_info[0]
-        price = stock_info[1]
-        change = stock_info[2]
+        name = stock_info[1]
+        price = stock_info[2]
+        change = stock_info[3]
 
-        email_subject = ticker
+        email_subject = name + " (" + ticker + ") "
         # change message based on increase or decrease
         if change > 0:
             changed = "increased"
