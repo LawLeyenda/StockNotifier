@@ -1,14 +1,14 @@
 ,AAPL,TSLA,GE,MMM,T,CSCO,SCHW,CMG,SBUX
-price,284.58,689.845,9.455,150.38,36.405,38.555,34.855,719.01,74.84
+price,288.98,703.24,9.4,153.55,37.035,39.69,34.1,722.47,75.3
 yesterday_close,292.92,724.54,10.07,151.41,37.18,39.57,34.8,727.55,76.19
 company_name,"Apple, Inc.","Tesla, Inc.",General Electric Co.,3M Co.,"AT&T, Inc.","Cisco Systems, Inc.",The Charles Schwab Corp.,"Chipotle Mexican Grill, Inc.",Starbucks Corp.
-user_notified_percent,0,0,0,0,0,0,0,0,0
-user_notified_price,0,0,0,0,0,0,0,0,0
-user_notified_time,0,0,0,0,0,0,0,0,0
-user_notified?,0,0,0,0,0,0,0,0,0
+user_notified_percent,0,-2.94,-6.75,0,0,0,0,0,0
+user_notified_price,0,703.24,9.39,0,0,0,0,0,0
+user_notified_time,0,2020-03-06 11:14:54.577517,2020-03-06 11:14:56.373305,0,0,0,0,0,0
+user_notified?,0,1,1,0,0,0,0,0,0
 price_target,,,,,,,,,
-pe_ratio,22.31,-138.3,124.41,18.99,19.14,14.9,12.99,56.96,24.16
+pe_ratio,22.66,-140.98,123.55,19.39,19.47,15.33,12.71,57.23,24.31
 week52High,327.85,968.99,13.26,219.75,39.7,58.26,51.65,940.28,99.72
-week52Low,169.5,176.99,7.65,144.44,29.74,38.35,34.45,604.64,69.03
-priceTargetAverage,331.35,573.45,13.37,172.67,40.04,52.86,52.15,939.83,95.48
-numberOfAnalysts,39,29,15,15,23,21,13,24,25
+week52Low,169.5,176.99,7.65,144.44,29.74,38.35,34.1,604.64,69.03
+priceTargetAverage,,,,,,,,,
+numberOfAnalysts,,,,,,,,,

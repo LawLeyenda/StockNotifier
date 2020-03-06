@@ -1,13 +1,11 @@
 from iexfinance.stocks import Stock
 import os
 import Passwords
-import datetime as dt
-import pytz
+from datetime import datetime, timedelta
+
 import StockData
-import time
 
 os.environ['IEX_TOKEN'] = Passwords.IEX_TOKEN
-pytz.timezone("US/Eastern")  # time zone convert
 
 
 class Stocks:
@@ -65,7 +63,9 @@ class Stocks:
                 self.myStockData.at[
                     'user_notified?', ticker] = 1  # set notification to true for further notification constraints
                 self.myStockData.at['user_notified_price', ticker] = price
-                self.myStockData.at['user_notified_time', ticker] = dt.datetime.now()
+                time_now = datetime.now()
+
+                self.myStockData.at['user_notified_time', ticker] = time_now - timedelta(hours=5)
                 self.myStockData.at['user_notified_percent', ticker] = change
                 return [ticker, name, price, change]  # send out email
 
@@ -78,13 +78,13 @@ class Stocks:
             numerator = price - self.myStockData.at['yesterday_close', ticker]
             name = self.myStockData.at['company_name', ticker]
             change = round((numerator / self.myStockData.at['yesterday_close', ticker]) * 100, 2)
-            time_now = dt.datetime.now()
+            time_now = datetime.now()
             if (notified > 0 and change >= 1.5 + notified) or \
                     (notified < 0 and change <= -1.5 + notified) and \
                     (int((time_now - self.myStockData.at[
                         'user_notified_time', ticker]).total_seconds()) > 3600):  # if the the notified change is greater than 1.5 and the time has been creater than an hour
                 self.myStockData.at['user_notified_price', ticker] = price
-                self.myStockData.at['user_notified_time', ticker] = time_now
+                self.myStockData.at['user_notified_time', ticker] = time_now - timedelta(hours=5)
                 self.myStockData.at['user_notified_percent', ticker] = change
                 return [ticker, name, price, change]  # send out email
 
@@ -97,11 +97,12 @@ class Stocks:
             temp = self.renotify(stock)
             email.renotify_email(temp)
             StockData.save(self.myStockData, "myStockData.csv")
-            print("Updated")
             # time.sleep(30)  # run every 30 seconds -- currently processed in main
 
     def end_of_day(self):
-        if dt.datetime.now().hour > 16:
+        time_now_end = datetime.now()
+        print(str(time_now_end.hour) + " " + str(time_now_end.minute))
+        if time_now_end.hour == 16 and ((time_now_end.minute <= 15) and (time_now_end.minute > 9)): # real time allegedly
             # house keeping
             # reset user_notified to 0
             print("end of day running")
@@ -110,14 +111,15 @@ class Stocks:
                 self.myStockData.at['user_notified_percent', stock] = 0
                 self.myStockData.at['user_notified_price', stock] = 0
                 self.myStockData.at['user_notified_time', stock] = 0
-            StockData.save(self.myStockData, "myStockData.csv")
+                StockData.save(self.myStockData, "myStockData.csv")
 
     def end_of_week(self):  # eventually add weekly report
-        if dt.datetime.now().hour > 16 and dt.datetime.day == 6:
+        time_now = datetime.now()
+        if time_now.hour == 21 and (time_now.minute == 1 or time_now.minute == 2) and time_now.day == 6:
             print("end of week running")
             # update price_targets for analysts
             for stock in self.myStockData:
                 retrieve_data = Stock(stock).get_price_target()  # get analysis data
                 self.myStockData.at['priceTargetAverage', stock] = retrieve_data.get('priceTargetAverage')
                 self.myStockData.at['numberOfAnalysts', stock] = retrieve_data.get('numberOfAnalysts')
-            StockData.save(self.myStockData, "myStockData.csv")
+                StockData.save(self.myStockData, "myStockData.csv")
