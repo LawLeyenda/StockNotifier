@@ -88,8 +88,9 @@ class Stocks:
                 self.myStockData.at['user_notified_percent', ticker] = change
                 return [ticker, name, price, change]  # send out email
 
-    def update_prices(self, email):  # calls email object and sends out email if notifications hit threshold
-        # while True:
+    def update_prices(self, email):
+        #print("updating...")
+        # calls email object and sends out email if notifications hit threshold
         for stock in self.myStockData:
             self.price(stock)
             temp = self.notify_user(stock)
@@ -100,18 +101,15 @@ class Stocks:
             # time.sleep(30)  # run every 30 seconds -- currently processed in main
 
     def end_of_day(self):
-        time_now_end = datetime.now()
-        print(str(time_now_end.hour) + " " + str(time_now_end.minute))
-        if time_now_end.hour == 16 and ((time_now_end.minute <= 15) and (time_now_end.minute > 9)): # real time allegedly
             # house keeping
             # reset user_notified to 0
-            print("end of day running")
-            for stock in self.myStockData:
-                self.myStockData.at['user_notified?', stock] = 0
-                self.myStockData.at['user_notified_percent', stock] = 0
-                self.myStockData.at['user_notified_price', stock] = 0
-                self.myStockData.at['user_notified_time', stock] = 0
-                StockData.save(self.myStockData, "myStockData.csv")
+        print("end of day running")
+        for stock in self.myStockData:
+            self.myStockData.at['user_notified?', stock] = 0
+            self.myStockData.at['user_notified_percent', stock] = 0
+            self.myStockData.at['user_notified_price', stock] = 0
+            self.myStockData.at['user_notified_time', stock] = 0
+            StockData.save(self.myStockData, "myStockData.csv")
 
     def end_of_week(self):  # eventually add weekly report
         time_now = datetime.now()
