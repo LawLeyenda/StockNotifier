@@ -14,7 +14,6 @@ class Stocks:
         self.myStockData = stock_data
 
     def price(self, ticker):
-
         try:
             # price = float(Stock(ticker).get_price())
             price = Stock(ticker).get_price()

@@ -1,4 +1,4 @@
-import Stocks
+import stocks
 import AutomateEmail
 import StockData
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -7,7 +7,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 def main():
     print("Starting...")
     data = StockData.read('myStockData.csv')
-    stock_system = Stocks.Stocks(data)
+    stock_system = stocks.Stocks(data)
     email = AutomateEmail.AutomateEmail()
     sched = BlockingScheduler()
 
