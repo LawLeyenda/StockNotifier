@@ -1,24 +1,24 @@
-import apscheduler
-from apscheduler.schedulers.blocking import BlockingScheduler
+class Geek:
+    def __init__(self, age=0):
+        self._age = age
+
+        # getter method
+
+    def get_age(self):
+        return self._age
+
+        # setter method
+
+    def set_age(self, x):
+        self._age = x
 
 
-def job_function():
-    print("Hello World")
+raj = Geek()
 
-def job_function1():
-    print("Hello Worldedfefr")
+# setting the age using setter
+raj.set_age(21)
 
-
-
-sched = BlockingScheduler()
-
-# Schedules job_function to be run on the third Friday
-# of June, July, August, November and December at 00:00, 01:00, 02:00 and 03:00
-# sched.add_job(job_function, 'cron', month='*', day='*', hour='*', minute='*', second=20)
-
-sched.add_job(job_function, 'cron', day_of_week='mon-fri', second='1,16,31,46,59', timezone='US/Eastern')
-sched.add_job(job_function1, 'cron', day_of_week='mon-fri', hour='4', minute=0, second=0, timezone='US/Eastern')
-
-sched.start()
-
-# Runs from Monday to Friday at 5:30 (am) until 2014-05-30 00:00:00
+# retrieving age using getter
+print(raj.get_age())
+raj.set_age(22)
+print(raj.get_age())

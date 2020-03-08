@@ -2,7 +2,7 @@ from iexfinance.stocks import Stock
 import os
 import Passwords
 from datetime import datetime, timedelta
-
+import news
 import StockData
 
 os.environ['IEX_TOKEN'] = Passwords.IEX_TOKEN
@@ -12,6 +12,14 @@ class Stocks:
 
     def __init__(self, stock_data):
         self.myStockData = stock_data
+        # my_news = news.News(self.myStockData) #creates my_news object that uses info from myStockData
+
+    # @property
+    # def myStockData(self):
+    #     return self.myStockData
+    #@myStockData.setter
+
+
 
     def price(self, ticker):
         try:
