@@ -16,8 +16,11 @@ class Stocks:
     def price(self, ticker):
 
         try:
-            price = float(Stock(ticker).get_price())
+            # price = float(Stock(ticker).get_price())
+            price = Stock(ticker).get_price()
+
             self.myStockData.at["price", ticker] = price
+
         except:
             try:
                 price = float(Stock(ticker).get_close())
