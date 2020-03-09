@@ -1,8 +1,5 @@
 import sqlite3
 
-conn = sqlite3.connect('stock.db')
-
-c = conn.cursor()
 
 sql_create_stocks_table = """CREATE TABLE IF NOT EXISTS Stock(
                                 stock_name text PRIMARY KEY,
@@ -41,5 +38,46 @@ sql_create_user_notified_table = """CREATE TABLE IF NOT EXISTS UserNotified(
 # c.execute(sql_create_stocks_news_table)
 # c.execute(sql_create_user_notified_table)
 
-conn.commit()
-conn.close()
+conn = sqlite3.connect('stock.db')
+
+conn.commit()  # saves all the changes made
+
+
+def sql_insert(conn, entities):
+    c = conn.cursor()
+
+    c.execute(
+        '''INSERT INTO Stock(stock_name,company_name,price,yesterday_close,pe_ratio,week52high,week52low) VALUES(?,?,?,?,?,?,?)''',
+        entities)
+
+    conn.commit()
+
+
+entities = ("BABA", None, 1234, None, None, None, None, "BABA")
+entities1 = ("MMM", None, 1234, None, None, None, None)
+
+
+def sql_update(conn, entities):
+    c = conn.cursor()
+    c.execute(
+        '''UPDATE Stock SET stock_name = ? ,company_name = ?,price = ?,yesterday_close = ?, pe_ratio = ?, week52high = ?, week52low = ? WHERE stock_name = ?''',
+        entities)
+
+    conn.commit()
+
+
+def sql_fetch(conn, *args): #
+    c = conn.cursor()
+    statement="""SELECT %s FROM %s""" % (table ,args)
+    #c.execute("""SELECT * FROM Stock WHERE stock_name=?""", (stock_name,))
+
+    rows = c.fetchone()
+    return rows
+
+
+attributes = ("BABA")
+# sql_update(conn, entities )
+# sql_insert(conn, entities1)
+sql_fetch(conn, "AAPL")
+
+# conn.close()

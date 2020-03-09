@@ -13,7 +13,7 @@ class MyTestCase(unittest.TestCase):
         with patch('stocks.Stock(ticker).get_price') as mock:
             mock = 300.00
             self.test.price('AAPL')
-            self.assertEqual(self.test.myStockData.at["price", 'AAPL'], 300)
+            self.assertEqual(self.test.myDatabase.at["price", 'AAPL'], 300)
 
 
 if __name__ == '__main__':
