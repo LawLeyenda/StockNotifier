@@ -66,9 +66,9 @@ def sql_update(conn, entities):
     conn.commit()
 
 
-def sql_fetch(conn, *args): #
+def sql_fetch(conn, table, *args): #
     c = conn.cursor()
-    statement="""SELECT %s FROM %s""" % (table ,args)
+    statement="""SELECT %s FROM %s""" % (table , args)
     #c.execute("""SELECT * FROM Stock WHERE stock_name=?""", (stock_name,))
 
     rows = c.fetchone()
