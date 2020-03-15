@@ -6,7 +6,7 @@ import re
 class Db:
 
     def __init__(self, database):
-        self.conn = sqlite3.connect(database)
+        self.conn = sqlite3.connect(database, check_same_thread=False) # shares connection among multiple threads
 
     def sql_insert_stock(self, entities):
         c = self.conn.cursor()
@@ -39,6 +39,13 @@ class Db:
         c = self.conn.cursor()
         c.execute(
             '''INSERT INTO UserNotified(last_updated, UserNotified_id, notified_percent, notified_time, notified_price, stock_name, is_user_notified) VALUES(?,?,?,?,?,?,?)''',
+            entities)
+        self.conn.commit()
+
+    def sql_insert_stock_news(self, entities): #interns news article if it doesnt already exist
+        c = self.conn.cursor()
+        c.execute(
+            '''INSERT or IGNORE INTO StockNews(stock_name, article_used, Article, url, datetime, summary) VALUES(?,?,?,?,?,?) ''',
             entities)
         self.conn.commit()
 

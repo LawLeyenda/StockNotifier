@@ -127,16 +127,20 @@ class Stocks:
                                          "notified_percent = %s where stock_name = \"%s\"" % (change, ticker))
                 return [ticker, name, price, change]  # send out email
 
-    def update_prices(self, email, database):
+    def update_prices(self, email, stock_news, database):
         # print("updating...")
         # calls email object and sends out email if notifications hit threshold
         list = database.stock_list()
         for stock in list:
             self.price(stock, database)
-            temp = self.notify_user(stock, database)
-            email.notify(temp)
-            temp = self.renotify(stock , database)
-            email.renotify_email(temp)
+            stock_info = self.notify_user(stock, database)
+            if stock_info is not None:
+                thisnews = stock_news.news(stock, database)
+                email.notify(stock_info, thisnews)
+            stock_info = self.renotify(stock, database) #ugly code
+            if stock_info is not None:
+                thisnews = stock_news.news(stock, database)
+                email.renotify_email(stock_info, thisnews)
             # time.sleep(30)  # run every 30 seconds -- currently processed in main
 
     @staticmethod
