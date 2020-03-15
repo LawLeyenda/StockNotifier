@@ -1,6 +1,6 @@
 import Passwords
 import smtplib
-
+from datetime import date
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -48,7 +48,7 @@ class AutomateEmail:
             news = "Bad news!"
 
         email_subject = "Update " + name + " (" + ticker + ") "" | $" + str(round(price, 2))
-        email_body = f"{news} " + email_subject + " is currently trading at $" + str(
+        email_body = str(date.today()) + f"\n{news} " + email_subject + " is currently trading at $" + str(
             price) + f". Today it has {changed} a total of " + str(abs(change)) + "%.\n" + news
         self.basic_automatic_email(email_subject, email_body)
 
@@ -67,7 +67,21 @@ class AutomateEmail:
             changed = "increased"
         else:
             changed = "decreased"
-        email_body = email_subject + f" has {changed} by " + str(
+        email_body = str(date.today()) + "\n" + email_subject + f" has {changed} by " + str(
             abs(round(change, 2))) + "% and is currently trading at $" + str(price) + ".\n" + news
         print("Sending " + str(ticker) + " email...")  # for testing purposes
         self.basic_automatic_email(email_subject, email_body)
+
+    def end_of_week(self, database):
+        analysts = str(date.today()) + "\n"
+        list = database.sql_fetch_many("distinct stock_name, priceTargetHigh, priceTargetAvg, priceTargetLow, numberOfAnalysts", "Analysts group by stock_name having numberOfAnalysts >=10")
+        for stock in list:
+            analysts = analysts + "::" + str(stock[0]) + "::\nprice target low: $" + str(stock[3]) + "\nprice target high: $" \
+                       + str(stock[1]) + "\nprice target average: $" + str(stock[2]) + "\nnumber of analysts: " + str(stock[4]) \
+                       + "\n----------------------------------\n"
+        email_subject = "Weekly Analyst Forecasts.\n"
+        self.basic_automatic_email(email_subject, analysts)
+        print("email sent")
+        return
+
+

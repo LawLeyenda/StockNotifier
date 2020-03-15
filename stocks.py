@@ -137,7 +137,7 @@ class Stocks:
             if stock_info is not None:
                 thisnews = stock_news.news(stock, database)
                 email.notify(stock_info, thisnews)
-            stock_info = self.renotify(stock, database) #ugly code
+            stock_info = self.renotify(stock, database)  # ugly code
             if stock_info is not None:
                 thisnews = stock_news.news(stock, database)
                 email.renotify_email(stock_info, thisnews)
@@ -150,21 +150,22 @@ class Stocks:
         print("end of day running")
         database.sql_update_open("UserNotified",
                                  "is_user_notified = 0, notified_percent = 0, notified_time = 0, notified_price = 0")
-        # for stock in self.myDatabase:
-        #
-        #     self.myDatabase.at['user_notified?', stock] = 0
-        #     self.myDatabase.at['user_notified_percent', stock] = 0
-        #     self.myDatabase.at['user_notified_price', stock] = 0
-        #     self.myDatabase.at['user_notified_time', stock] = 0
-        #     StockData.save(self.myDatabase, "myStockData.csv")
 
-    def end_of_week(self, database):  # eventually add weekly report
+    def end_of_week(self, database, email):  # eventually add weekly report
         print("end of week running")
         # update price_targets for analysts
-        count = int(database.sql_fetch_one("count(stock_name)", "Stock"))
-        i = 1
-        while i <= count:
-            retrieve_data = Stock(stock).get_price_target()  # get analysis data
-            self.myDatabase.at['priceTargetAverage', stock] = retrieve_data.get('priceTargetAverage')
-            self.myDatabase.at['numberOfAnalysts', stock] = retrieve_data.get('numberOfAnalysts')
-            i = i + 1
+        my_list = database.stock_list()
+        for stock in my_list:
+            analyst = Stock(stock).get_price_target()
+            if analyst is not None:  # if data exists then log information into database
+                symbol = analyst.get('symbol')
+                last_updated = analyst.get('updatedDate')
+                priceTargetHigh = analyst.get('priceTargetHigh')
+                priceTargetAvg = analyst.get('priceTargetAverage')
+                priceTargetLow = analyst.get('priceTargetLow')
+                numberOfAnalysts = analyst.get('numberOfAnalysts')
+                date = datetime.now()
+                entities = (
+                    last_updated, priceTargetHigh, priceTargetAvg, priceTargetLow, numberOfAnalysts, symbol, date)
+                database.sql_insert_analyst(entities)
+        email.end_of_week(database)

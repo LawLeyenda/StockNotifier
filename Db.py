@@ -22,6 +22,13 @@ class Db:
             entities)
         self.conn.commit()
 
+    def sql_insert_analyst(self, entities):
+        c = self.conn.cursor()
+        c.execute(
+            '''INSERT INTO Analysts(last_updated,priceTargetHigh,priceTargetAvg,priceTargetLow,numberOfAnalysts,stock_name,datetime) VALUES(?,?,?,?,?,?,?)''',
+            entities)
+        self.conn.commit()
+
     def sql_delete_stock(self, stock):
         c = self.conn.cursor()
         c.execute(
@@ -83,6 +90,12 @@ class Db:
 
     def stock_list(self):  # stock list of db
         list = self.sql_fetch_many("stock_name", "stock")
+        str_list = str(list).strip("\n")
+        my_list = re.findall(r"\('(.*?)',\)", str_list)
+        return my_list
+
+    def analyst_stock_list(self): #cretes a list of distinct stocks from analysts. Have to use this since etfs like SPY hace no estimates
+        list = self.sql_fetch_many("distinct stock_name", "Analysts")
         str_list = str(list).strip("\n")
         my_list = re.findall(r"\('(.*?)',\)", str_list)
         return my_list
